@@ -15,3 +15,4 @@ __plugin_meta__ = PluginMetadata(
 
 from . import webhook
 from . import commands
+from . import middleware
