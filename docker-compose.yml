@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  nonebot:
+    build: .
+    container_name: fzuhelper-bot-bot
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      ENVIRONMENT: prod
+      HOST: 0.0.0.0
+      PORT: 8080
+    restart: unless-stopped
+    networks:
+      - bot-network
+
+  lagrange-onebot:
+    image: ghcr.io/lagrangedev/lagrange.onebot:edge
+    container_name: lagrange-onebot
+    volumes:
+      - ./data:/app/data
+    environment:
+      - UID=${UID:-1000}
+      - GID=${GID:-1000}
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - bot-network
+    depends_on:
+      - nonebot
+
+networks:
+  bot-network:
+    driver: bridge
