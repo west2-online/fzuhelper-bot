@@ -47,3 +47,8 @@ docker logs -f lagrange-onebot
 
 > [!NOTE]
 > 如果控制台中的二维码无法扫描，可以打开 `data/qr-0.png` 文件扫描图片中的二维码。
+
+### 5. 测试BOT
+
+在群中发送`/bot-ping` (首先得拉BOT进群)  
+如果BOT正常就会响应`pong`
