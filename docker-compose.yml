@@ -18,6 +18,12 @@ services:
       TEST_GROUP_ID: 785037622
       APP_REPO: ACaiCat/WebHookTest
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "http://localhost:8080" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - bot-network
 
@@ -35,7 +41,8 @@ services:
     networks:
       - bot-network
     depends_on:
-      - nonebot
+      nonebot:
+        condition: service_healthy
 
 networks:
   bot-network:
