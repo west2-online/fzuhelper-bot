@@ -3,7 +3,7 @@ version: "3.8"
 services:
   nonebot:
     build: .
-    container_name: fzuhelper-bot-bot
+    container_name: fzuhelper-bot
     volumes:
       - ./data:/app/data
     ports:
