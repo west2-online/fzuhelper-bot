@@ -23,6 +23,6 @@ def format_git_log(release_body: str) -> str:
         .splitlines()
         [:-1]).strip()
 
-    commits = ["#️⃣" + commit.strip() for commit in git_log.split('\n\n') if commit.strip()]
+    commits = [commit.strip() for commit in git_log.split('\n\n') if commit.strip()]
 
     return '\n\n'.join(commits)
