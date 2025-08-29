@@ -1,9 +1,8 @@
-# from nonebot import on_command
-# from nonebot.adapters.onebot.v11 import Bot
-#
-# test = on_command("test114", force_whitespace=True, block=True)
-#
-#
-# @test.handle()
-# async def _(bot: Bot):
-#     ...
+from nonebot import on_command
+
+ping = on_command("bot-ping", force_whitespace=True, block=True)
+
+
+@ping.handle()
+async def _():
+    await ping.finish("pong")
