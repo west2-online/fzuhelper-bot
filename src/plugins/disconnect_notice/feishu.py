@@ -14,6 +14,11 @@ async def post_offline_notice(qq: int, msg: str, reason: str) -> None:
             "reason": reason,
             "qq": qq
         }
+
+        if not config.offline_notice_webhook:
+            nonebot.logger.info("没有配置OFFLINE_NOTICE_WEBHOOK，跳过上报掉线!")
+            return
+
         async with session.post(config.offline_notice_webhook, json=payload) as response:
             if response.status == 200:
                 nonebot.logger.success("Bot掉线上报成功!")
