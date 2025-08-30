@@ -92,8 +92,8 @@ docker logs -f lagrange-onebot
           勾选Releases
         - Send me everything.
 
-   > [!IMPORTANT]   
-   > Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
+  > [!IMPORTANT]   
+  > Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
 
 3. 测试Webhook
    点开新建Webhook的Recent Deliveries可以看到最近的交付，如果ping事件正确响应，则Webhook配置正确
