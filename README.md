@@ -1,5 +1,5 @@
 # fzuhelper-bot
-
+![img](https://github.com/user-attachments/assets/6f58cb88-9594-48d1-80a1-b6789c07074d)
 ## 功能
 
 * 推送福uu内测版更新日志
