@@ -24,4 +24,4 @@ async def post_offline_notice(qq: int, msg: str, reason: str) -> None:
                 nonebot.logger.success("Bot掉线上报成功!")
             else:
                 nonebot.logger.error(f"Bot掉线上报失败!\n"
-                                     f"WebHook响应: {response.text()}")
+                                     f"WebHook响应: {await response.text()}")
