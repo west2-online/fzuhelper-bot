@@ -20,8 +20,12 @@ async def post_offline_notice(qq: int, msg: str, reason: str) -> None:
             return
 
         async with session.post(config.offline_notice_webhook, json=payload) as response:
-            if response.status == 200:
-                nonebot.logger.success("Bot掉线上报成功!")
-            else:
+            try:
+                if response.status == 200:
+                    nonebot.logger.success("Bot掉线上报成功!")
+                else:
+                    nonebot.logger.error(f"Bot掉线上报失败!\n"
+                                         f"WebHook响应: {await response.text()}")
+            except Exception as ex:
                 nonebot.logger.error(f"Bot掉线上报失败!\n"
-                                     f"WebHook响应: {await response.text()}")
+                                     f"错误: {ex}")
