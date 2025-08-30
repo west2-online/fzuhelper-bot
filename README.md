@@ -11,7 +11,7 @@
 
 * 已安装 [Docker](https://docs.docker.com/engine/install/)和[Docker Compose](https://docs.docker.com/compose/install/)
 * 一个已注册的QQ账号（用作机器人）
-* 一个想好的GitHub WebHook密钥
+* 一个想好的GitHub Webhook密钥
 
 ### 1. 克隆仓库
 
@@ -31,13 +31,13 @@ cp .env.example .env
 ```ini
 #NoneBot驱动 (无需改动)
 DRIVER=~fastapi 
-#WebHook的密钥
+#Webhook的密钥
 WEBHOOK_SECRET=SECRET
 #测试群号
 TEST_GROUP_ID=785037622
 #APP仓库的全名
 APP_REPO=ACaiCat/WebHookTest
-#离线飞书通知的WebHook地址
+#离线飞书通知的Webhook地址
 OFFLINE_NOTICE_WEBHOOK=https://www.feishu.cn/...
 ```
 
@@ -80,17 +80,17 @@ docker logs -f lagrange-onebot
 在群中发送`/bot-ping` (首先得拉BOT进群)  
 如果BOT正常就会响应`pong`
 
-### 7. 添加WebHook
+### 7. 添加Webhook
 
 1. 在`仓库-Settings-Webhooks`选择`Add webhook`新建一个Webhook
 2. 配置Webhook
-    - Payload URL: http(s)://address:port/github/webhook
-    - Content type: application/json
-    - Secret: webhook_secret
+    - Payload URL: `http(s)://address:port/github/webhook`
+    - Content type: `application/json`
+    - Secret: `webhook_secret`
     - Which events would you like to trigger this webhook?
-        - Let me select individual events.
-          勾选Releases
-        - Send me everything.
+        - `Let me select individual events.`  
+          勾选`Releases`
+        - `Send me everything.`
 
   > [!IMPORTANT]   
   > Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
