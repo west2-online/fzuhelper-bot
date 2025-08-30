@@ -9,7 +9,21 @@ git clone https://github.com/ACaiCat/fzuhelper-bot.git
 cd fzuhelper-bot
 ```
 
-### 2. 配置 Docker Compose
+### 2. 配置环境变量
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，配置必要的环境变量：
+
+```ini
+DRIVER=~fastapi
+WEBHOOK_SECRET=SECRET
+TEST_GROUP_ID=785037622
+APP_REPO=ACaiCat/WebHookTest
+```
+
+### 3. 配置 Docker Compose
 
 复制 docker-compose 模板并重命名：
 
@@ -17,27 +31,22 @@ cd fzuhelper-bot
 cp docker-compose.yml docker-compose.override.yml
 ```
 
-编辑 `docker-compose.override.yml` 文件，配置必要的环境变量：
+编辑 `docker-compose.override.yml` 文件，配置端口映射等：
 
 ```yaml
 services:
   nonebot:
     ports:
       - "8080:8080"
-    environment:
-      WEBHOOK_SECRET: YOUR_SECRET_HERE  # 替换为您的WebHook密钥
-      TEST_GROUP_ID: 785037622          # 测试群号
-      APP_REPO: ACaiCat/WebHookTest     # 完整仓库名
-    # 其他配置...
 ```
 
-### 3. 使用 Docker Compose 部署
+### 4. 使用 Docker Compose 部署
 
 ```bash
 docker-compose up -d
 ```
 
-### 4. 登录 QQ 机器人
+### 5. 登录 QQ 机器人
 
 查看Lagrange.OneBot日志并扫描二维码登录：
 

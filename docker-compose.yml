@@ -14,9 +14,6 @@ services:
       ENVIRONMENT: prod
       HOST: 0.0.0.0
       PORT: 8080
-      WEBHOOK_SECRET: SECRET
-      TEST_GROUP_ID: 785037622
-      APP_REPO: ACaiCat/WebHookTest
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:8080" ]
