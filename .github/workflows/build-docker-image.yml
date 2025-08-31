@@ -2,7 +2,7 @@ name: Build Docker Image
 
 on:
   push:
-    branches: [ "master", "docker" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -76,7 +76,7 @@ jobs:
           tag_name: edge
           name: 'Edge Release'
           body: |
-            ## 📦 Auto Release By Github Action
+            ### 📦 Auto Release By Github Action
           prerelease: false
           files: |
             docker-fzuhelper-bot.zip
