@@ -48,3 +48,38 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
+
+      - name: Delete edge release using GitHub CLI
+        if: github.event_name != 'pull_request'
+        run: |
+          if gh release view edge; then
+            gh release delete edge --yes
+          else
+            echo "No edge release exists."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package docker files
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir docker-fzuhelper-bot
+          cp .env.example docker-fzuhelper-bot/
+          cp docker-compose.yml docker-fzuhelper-bot/
+          tar -czf docker-fzuhelper-bot.tar.gz docker-fzuhelper-bot/
+          zip -r docker-fzuhelper-bot.zip docker-fzuhelper-bot/
+
+      - name: Create GitHub Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: edge
+          name: 'Edge Release'
+          body: |
+            ## 📦 Auto Release By Github Action
+          prerelease: false
+          files: |
+            docker-fzuhelper-bot.zip
+            docker-fzuhelper-bot.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
