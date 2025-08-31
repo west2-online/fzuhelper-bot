@@ -13,11 +13,12 @@
 * 一个已注册的QQ账号（用作机器人）
 * 一个想好的GitHub Webhook密钥
 
-### 1. 克隆仓库
+### 1. 下载并解压release
 
 ```bash
-git clone https://github.com/ACaiCat/fzuhelper-bot.git
-cd fzuhelper-bot
+wget https://github.com/west2-online/fzuhelper-bot/releases/download/edge/docker-fzuhelper-bot.tar.gz
+tar -xzf docker-fzuhelper-bot.tar.gz
+cd docker-fzuhelper-bot
 ```
 
 ### 2. 配置环境变量
@@ -61,7 +62,7 @@ services:
 ### 4. 使用 Docker Compose 部署
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 5. 登录 QQ 机器人
@@ -92,8 +93,8 @@ docker logs -f lagrange-onebot
           勾选`Releases`
         - `Send me everything.`
 
-  > [!IMPORTANT]   
-  > Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
+> [!IMPORTANT]   
+> Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
 
 3. 测试Webhook
    点开新建Webhook的Recent Deliveries可以看到最近的交付，如果ping事件正确响应，则Webhook配置正确
