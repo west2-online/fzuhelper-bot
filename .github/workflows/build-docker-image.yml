@@ -64,8 +64,8 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir docker-fzuhelper-bot
-          cp .env.example docker-fzuhelper-bot/
-          cp docker-compose.yml docker-fzuhelper-bot/
+          cp docker/.env.example docker-fzuhelper-bot/
+          cp docker/docker-compose.yml docker-fzuhelper-bot/
           tar -czf docker-fzuhelper-bot.tar.gz docker-fzuhelper-bot/
           zip -r docker-fzuhelper-bot.zip docker-fzuhelper-bot/
 
