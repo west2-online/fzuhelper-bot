@@ -18,7 +18,7 @@ services:
       interval: 120s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 10s
     networks:
       - bot-network
 
