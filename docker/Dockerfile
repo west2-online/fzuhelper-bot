@@ -10,9 +10,8 @@ ENV PYTHONPATH=/app
 
 ENV MAX_WORKERS=1
 
-COPY . /app/
+COPY .. /app/
 
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install uv
 RUN uv sync --frozen
 

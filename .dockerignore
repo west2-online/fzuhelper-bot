@@ -2,8 +2,8 @@
 
 # .env.*
 .dockerignore
-Dockerfile
-docker-compose.yml
+docker/Dockerfile
+docker/docker-compose.yml
 README.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,node,visualstudiocode,jetbrains,macos,windows,linux
@@ -471,6 +471,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,node,visualstudiocode,jetbrains,macos,windows,linux
-
+renovate.json
 data
 .idea
