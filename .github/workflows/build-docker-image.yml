@@ -77,7 +77,7 @@ jobs:
           name: 'Edge Release'
           body: |
             ### 📦 Auto Release By Github Action
-          prerelease: false
+          prerelease: true
           files: |
             docker-fzuhelper-bot.zip
             docker-fzuhelper-bot.tar.gz
