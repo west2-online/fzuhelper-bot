@@ -64,3 +64,8 @@ async def _(request: Request):
 
         case _:
             return {"message": "Not processed"}
+
+
+@app.get("/")
+async def _():
+    return {"message": "pong"}
