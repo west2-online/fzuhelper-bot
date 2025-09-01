@@ -3,6 +3,7 @@
 ## 功能
 
 * 推送福uu内测版更新日志
+* 上传福uu测试版apk
 * BOT掉线通知
 
 ## 部署
@@ -118,3 +119,11 @@ docker restart lagrange-onebot
 > rm data/keystore.json data/device.json
 > docker restart lagrange-onebot
 > ```
+
+## 登录失败
+
+1. 在自己电脑下载[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core/releases/tag/nightly)
+2. 运行Lagrange.OneBot，并且按下任意键进入登录
+3. 登录
+4. 把生成的`device.json`和`keystore.json`上传到`data`文件夹中
+5. 使用`docker restart lagrange-onebot`重启容器即可完成登录
