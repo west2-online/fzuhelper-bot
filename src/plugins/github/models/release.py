@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, HttpUrl
 
+from .asset import Asset
+
 
 class Release(BaseModel):
     """GitHub release model"""
@@ -17,5 +19,5 @@ class Release(BaseModel):
     created_at: datetime
     updated_at: datetime
     published_at: datetime
-    assets: List[dict]
     body: Optional[str]
+    assets: List[Asset]

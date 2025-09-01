@@ -1,16 +1,18 @@
+import asyncio
 import json
 
 import nonebot
-from fastapi import Request, HTTPException, FastAPI
+from fastapi import Request, HTTPException, FastAPI, BackgroundTasks
 from nonebot import get_plugin_config
 from starlette import status
 
 from .config import Config
 from .models import Release, Repository
-from .utils import verify_signature, send_group_message, format_git_log
+from .utils import verify_signature, send_group_message, format_git_log, download_release_file, upload_group_file
 
 app: FastAPI = nonebot.get_app()
 config = get_plugin_config(Config)
+
 
 @app.post("/github/webhook")
 async def _(request: Request):
@@ -45,7 +47,17 @@ async def _(request: Request):
 
                 await send_group_message(config.test_group_id,
                                          message)
-            return {"message": "ok"}
+
+                async def upload_apk():
+                    apk_asset = release.assets[0]
+                    apk_name = apk_asset.name.replace(".apk", ".Apk")
+                    await download_release_file(apk_asset.browser_download_url, apk_name, True)
+                    await upload_group_file(config.test_group_id, apk_name)
+
+                asyncio.create_task(upload_apk())
+                return {"message": "ok"}
+
+            return {"message": "Not processed"}
 
         case "ping":
             return {"message": "pong"}

@@ -1,13 +1,46 @@
 import hashlib
 import hmac
+from pathlib import Path
 
+import aiohttp
 import nonebot
 from nonebot.adapters.onebot.v11 import Bot, Message
+
+from ... import TEMP_DIR_PATH
 
 
 async def send_group_message(group_id: int, message: str | Message):
     bot: Bot = nonebot.get_bot()
     await bot.send_group_msg(group_id=group_id, message=message)
+
+
+async def upload_group_file(group_id: int, file_name: str):
+    bot: Bot = nonebot.get_bot()
+    print(TEMP_DIR_PATH, file_name)
+    await bot.call_api("upload_group_file", group_id=group_id, file=str(TEMP_DIR_PATH / file_name), name=file_name)
+    '''
+    /upload_group_file
+    {
+    "group_id": 0,
+    "file": "string",
+    "name": "string",
+    "folder": "/"
+    }
+    '''
+
+
+async def download_release_file(url: str, file_name: str, use_xget: bool = True):
+    if use_xget:
+        url = (url.replace("https://github.com/", "https://xget.xi-xu.me/gh/"))
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            response.raise_for_status()
+            file_path = TEMP_DIR_PATH / file_name
+
+            with open(file_path, 'wb') as f:
+                async for chunk in response.content.iter_chunked(1024):
+                    f.write(chunk)
 
 
 def verify_signature(payload, signature, secret) -> bool:
