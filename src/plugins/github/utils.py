@@ -14,19 +14,23 @@ async def send_group_message(group_id: int, message: str | Message):
     await bot.send_group_msg(group_id=group_id, message=message)
 
 
-async def upload_group_file(group_id: int, file_name: str):
+async def upload_group_file(group_id: int, file_name: str, delete_after_upload: bool = True):
     bot: Bot = nonebot.get_bot()
-    print(TEMP_DIR_PATH, file_name)
-    await bot.call_api("upload_group_file", group_id=group_id, file=str(TEMP_DIR_PATH / file_name), name=file_name)
-    '''
-    /upload_group_file
-    {
-    "group_id": 0,
-    "file": "string",
-    "name": "string",
-    "folder": "/"
-    }
-    '''
+    file_path = TEMP_DIR_PATH / file_name
+    try:
+        await bot.call_api("upload_group_file", group_id=group_id, file=str(file_path), name=file_name)
+        '''
+        /upload_group_file
+        {
+        "group_id": 0,
+        "file": "string",
+        "name": "string",
+        "folder": "/"
+        }
+        '''
+    finally:
+        if delete_after_upload:
+            file_path.unlink(missing_ok=True)
 
 
 async def download_release_file(url: str, file_name: str, use_xget: bool = True):
