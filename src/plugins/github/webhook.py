@@ -2,7 +2,7 @@ import asyncio
 import json
 
 import nonebot
-from fastapi import Request, HTTPException, FastAPI, BackgroundTasks
+from fastapi import Request, HTTPException, FastAPI
 from nonebot import get_plugin_config
 from starlette import status
 

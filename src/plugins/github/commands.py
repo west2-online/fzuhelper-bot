@@ -4,6 +4,8 @@ from .config import Config
 ping = on_command("bot-ping", force_whitespace=True, block=True)
 
 config = get_plugin_config(Config)
+
+
 @ping.handle()
 async def _():
     await ping.finish("pong\n"

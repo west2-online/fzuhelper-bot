@@ -1,6 +1,5 @@
 import hashlib
 import hmac
-from pathlib import Path
 
 import aiohttp
 import nonebot
