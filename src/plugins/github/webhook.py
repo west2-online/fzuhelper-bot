@@ -38,7 +38,7 @@ async def _(request: Request):
             action = payload["action"]
             release = Release.model_validate(payload['release'])
             if (repo.full_name == config.app_repo and
-                    action == "published" and
+                    action == "edited" and  # 只有edit才能拿到assets疑似工作流Bug
                     release.tag_name == "alpha"):
                 git_log = format_git_log(release.body)
 
