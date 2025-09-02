@@ -48,13 +48,31 @@ async def _(request: Request):
                 await send_group_message(config.test_group_id,
                                          message)
 
-                async def upload_apk():
-                    apk_asset = release.assets[0]
-                    apk_name = apk_asset.name.replace(".apk", ".Apk")
-                    await download_release_file(apk_asset.browser_download_url, apk_name, True)
-                    await upload_group_file(config.test_group_id, apk_name)
+                async def try_upload_apk():
+                    max_retries = 3
+                    retry_delay = 5
 
-                asyncio.create_task(upload_apk())
+                    for attempt in range(max_retries):
+                        try:
+                            apk_asset = release.assets[0]
+                            apk_name = apk_asset.name.replace(".apk", ".Apk")
+
+                            await download_release_file(apk_asset.browser_download_url, apk_name, True)
+                            await upload_group_file(config.test_group_id, apk_name)
+
+                            nonebot.logger.success(f"APK上传成功！(第{attempt + 1}次尝试)")
+                            break
+
+                        except Exception as e:
+                            nonebot.logger.error(f"第{attempt + 1}次尝试失败: {str(e)}")
+
+                            if attempt < max_retries - 1:
+                                nonebot.logger.info(f"{retry_delay}秒后重试...")
+                                await asyncio.sleep(retry_delay)
+                            else:
+                                nonebot.logger.warning(f"经过{max_retries}次尝试后仍然失败，放弃上传")
+
+                asyncio.create_task(try_upload_apk())
                 return {"message": "ok"}
 
             return {"message": "Not processed"}
