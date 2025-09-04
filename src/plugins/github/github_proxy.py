@@ -3,8 +3,8 @@ import aiohttp
 from ... import TEMP_DIR_PATH
 
 PROXYS = [
-    "https://ghproxy.net1/",
-    "https://gh.llkk.cc1/",
+    "https://ghproxy.net/",
+    "https://gh.llkk.cc/",
     "https://gh-proxy.com/"
 ]
 
