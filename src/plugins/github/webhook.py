@@ -7,8 +7,9 @@ from nonebot import get_plugin_config
 from starlette import status
 
 from .config import Config
+from .github_proxy import GitHubProxy
 from .models import Release, Repository
-from .utils import verify_signature, send_group_message, format_git_log, download_release_file, upload_group_file
+from .utils import verify_signature, send_group_message, format_git_log, upload_group_file
 
 app: FastAPI = nonebot.get_app()
 config = get_plugin_config(Config)
@@ -57,7 +58,7 @@ async def _(request: Request):
                             apk_asset = release.assets[0]
                             apk_name = apk_asset.name.replace(".apk", ".Apk")
 
-                            await download_release_file(apk_asset.browser_download_url, apk_name, True)
+                            await GitHubProxy.download_file(apk_asset.browser_download_url, apk_name, True)
                             await upload_group_file(config.test_group_id, apk_name)
 
                             nonebot.logger.success(f"APK上传成功！(第{attempt + 1}次尝试)")
