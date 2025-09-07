@@ -142,3 +142,4 @@ dmypy.json
 data
 .idea
 docker-compose.yml
+!/docker/data/
