@@ -38,6 +38,7 @@ async def _(request: Request):
         case "release":
             action = payload["action"]
             release = Release.model_validate(payload['release'])
+            nonebot.logger.info(f"收到release事件({action}): {release.model_dump_json()}")
             if (repo.full_name == config.app_repo and
                     action == "edited" and  # 只有edit才能拿到assets疑似工作流Bug
                     release.tag_name == "alpha"):
