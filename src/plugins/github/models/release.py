@@ -16,8 +16,8 @@ class Release(BaseModel):
     name: str
     draft: bool
     prerelease: bool
-    created_at: datetime
-    updated_at: datetime
-    published_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    published_at: Optional[datetime] = None
     body: Optional[str]
     assets: List[Asset]
