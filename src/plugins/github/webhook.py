@@ -48,8 +48,8 @@ async def _(request: Request):
                 message = (f"『{release.name}更新日志』\n" +
                            git_log)
 
-                await send_group_message(config.test_group_id,
-                                         message)
+                asyncio.create_task(send_group_message(config.test_group_id,
+                                         message))
 
                 async def try_upload_apk():
                     max_retries = 3
