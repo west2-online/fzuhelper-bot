@@ -20,8 +20,8 @@ class GitHubProxy:
 
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
+                    response.raise_for_status()
                     file_path = TEMP_DIR_PATH / file_name
-
                     with open(file_path, 'wb') as f:
                         async for chunk in response.content.iter_chunked(1024):
                             f.write(chunk)
