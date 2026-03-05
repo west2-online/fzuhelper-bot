@@ -7,7 +7,7 @@ from .config import Config
 config = get_plugin_config(Config)
 
 
-async def post_offline_notice(qq: int, msg: str, reason: str) -> None:
+async def post_feishu_offline_notice(qq: int, msg: str, reason: str) -> None:
     async with aiohttp.ClientSession() as session:
         payload = {
             "msg": msg,
@@ -16,7 +16,7 @@ async def post_offline_notice(qq: int, msg: str, reason: str) -> None:
         }
 
         if not config.offline_notice_webhook:
-            nonebot.logger.info("没有配置OFFLINE_NOTICE_WEBHOOK，跳过上报掉线!")
+            nonebot.logger.info("没有配置OFFLINE_NOTICE_WEBHOOK，跳过飞书上报掉线!")
             return
 
         async with session.post(config.offline_notice_webhook, json=payload) as response:
