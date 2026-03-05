@@ -41,6 +41,13 @@ TEST_GROUP_ID=785037622
 APP_REPO=ACaiCat/WebHookTest
 #离线飞书通知的Webhook地址
 OFFLINE_NOTICE_WEBHOOK=https://www.feishu.cn/...
+#离线邮件通知配置
+SMTP_SERVER=smtp.qq.com
+SMTP_PORT=465
+SMTP_USERNAME=your_bot_email@qq.com
+SMTP_PASSWORD=your_generated_auth_code
+EMAIL_FROM=your_bot_email@qq.com
+EMAIL_TO=your_admin_email@gmail.com
 ```
 
 ### 3. 配置 Docker Compose
