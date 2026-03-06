@@ -48,21 +48,17 @@ CHANGELOG_PROMPT = """
 
 async def call_model_process_changelog(prompt):
     headers = {
-        "Authorization": f"Bearer {config.ai_api_url}",
+        "Authorization": f"Bearer {config.ai_api_key}",
         "Content-Type": "application/json",
     }
 
     data = {
         "model": config.ai_model,
-        "input": {
-            "messages": [
-                {"role": "system", "content": CHANGELOG_PROMPT},
-                {"role": "user", "content": prompt}
-            ]
-        },
-        "parameters": {
-            "result_format": "message"
-        }
+        "messages": [
+            {"role": "system", "content": CHANGELOG_PROMPT},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0,
     }
 
     async with httpx.AsyncClient() as client:
@@ -70,7 +66,7 @@ async def call_model_process_changelog(prompt):
         response.raise_for_status()
 
         result = response.json()
-        content: str = result['output']['choices'][0]['message']['content']
+        content: str = result['choices'][0]['message']['content']
         return content.strip()
 
 
