@@ -1,6 +1,7 @@
 from nonebot.plugin import PluginMetadata
 
 from . import notice_event
+from . import commands
 
 __plugin_meta__ = PluginMetadata(
     name="disconnect_notice",
