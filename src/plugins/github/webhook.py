@@ -6,10 +6,11 @@ from fastapi import Request, HTTPException, FastAPI
 from nonebot import get_plugin_config
 from starlette import status
 
+from .changelog import process_changelog
 from .config import Config
 from .github_proxy import GitHubProxy
 from .models import Release, Repository
-from .utils import verify_signature, send_group_message, format_git_log, upload_group_file
+from .utils import verify_signature, send_group_message, upload_group_file
 
 app: FastAPI = nonebot.get_app()
 config = get_plugin_config(Config)
@@ -43,13 +44,13 @@ async def _(request: Request):
                     action == "published" and
                     release.tag_name == "alpha"):
 
-                git_log = format_git_log(release.body)
+                git_log = await process_changelog(release.body)
 
                 message = (f"『{release.name}更新日志』\n" +
                            git_log)
 
                 asyncio.create_task(send_group_message(config.test_group_id,
-                                         message))
+                                                       message))
 
                 async def try_upload_apk():
                     max_retries = 3

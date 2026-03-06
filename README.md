@@ -48,6 +48,10 @@ SMTP_USERNAME=your_bot_email@qq.com
 SMTP_PASSWORD=your_generated_auth_code
 EMAIL_FROM=your_bot_email@qq.com
 EMAIL_TO=your_admin_email@gmail.com
+#AI配置 (生成CHANGELOG)
+AI_API_KEY=your_ai_api_key
+AI_API_URL=https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+AI_MODEL=qwen-max-latest
 ```
 
 ### 3. 配置 Docker Compose
