@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+import aiohttp
 import nonebot
 from fastapi import Request, HTTPException, FastAPI
 from nonebot import get_plugin_config
@@ -56,11 +57,20 @@ async def _(request: Request):
                     max_retries = 3
                     retry_delay = 5
 
+                    await asyncio.sleep(retry_delay)
+
+                    api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
+                            resp.raise_for_status()
+                            apiPayload = await resp.json()
+
+                    apiRelease = Release.model_validate(apiPayload)
+                    apk_asset = apiRelease.assets[0]
+                    apk_name = apk_asset.name.replace(".apk", ".Apk")
+
                     for attempt in range(max_retries):
                         try:
-                            apk_asset = release.assets[0]
-                            apk_name = apk_asset.name.replace(".apk", ".Apk")
-
                             await GitHubProxy.download_file(apk_asset.browser_download_url, apk_name, True)
                             await upload_group_file(config.test_group_id, apk_name)
 

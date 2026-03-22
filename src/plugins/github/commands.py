@@ -25,7 +25,7 @@ download_test = on_command("bot-download", force_whitespace=True, block=True)
 
 @download_test.handle()
 async def _(event: GroupMessageEvent):
-    api_url = f"https://api.github.com/repos/west2-online/fzuhelper-app/releases/tags/alpha"
+    api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
     async with aiohttp.ClientSession() as session:
         async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
             resp.raise_for_status()
@@ -46,7 +46,7 @@ changelog_test = on_command("bot-changelog", force_whitespace=True, block=True)
 
 @changelog_test.handle()
 async def _(event: GroupMessageEvent):
-    api_url = f"https://api.github.com/repos/west2-online/fzuhelper-app/releases/tags/alpha"
+    api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
     async with aiohttp.ClientSession() as session:
         async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
             resp.raise_for_status()
