@@ -36,15 +36,22 @@ async def _(request: Request):
 
     payload = json.loads(body.decode('utf-8'))
     repo = Repository.model_validate(payload['repository'])
+    processed_releases = set()
     match event_type:
         case "release":
             action = payload["action"]
             release = Release.model_validate(payload['release'])
+
+            release_key = f"{release.id}_{action}"
+            if release_key in processed_releases:
+                nonebot.logger.info(f"忽略重复的release事件: {release_key}")
+                return {"message": "duplicate ignored"}
+            processed_releases.add(release_key)
+
             nonebot.logger.info(f"收到release事件({action}): {release.model_dump_json()}")
             if (repo.full_name == config.app_repo and
                     action == "published" and
                     release.tag_name == "alpha"):
-
                 git_log = await process_changelog(release.body)
 
                 message = (f"『{release.name}更新日志』\n" +

@@ -8,6 +8,7 @@ from .asset import Asset
 
 class Release(BaseModel):
     """GitHub release model"""
+    id: int
     url: HttpUrl
     assets_url: HttpUrl
     upload_url: HttpUrl
