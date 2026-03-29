@@ -2,33 +2,17 @@ import hashlib
 import hmac
 
 import nonebot
-from nonebot.adapters.onebot.v11 import Bot, Message
-
-from ... import TEMP_DIR_PATH
+from nonebot.adapters.milky import Bot, Message
 
 
-async def send_group_message(group_id: int, message: str | Message):
+async def send_group_message(group_id: int, message: str | Message) -> None:
     bot: Bot = nonebot.get_bot()
-    await bot.send_group_msg(group_id=group_id, message=message)
+    await bot.send_group_message(group_id=group_id, message=message)
 
 
-async def upload_group_file(group_id: int, file_name: str, delete_after_upload: bool = True):
+async def upload_group_file(group_id: int, file_name: str, file: bytes) -> None:
     bot: Bot = nonebot.get_bot()
-    file_path = TEMP_DIR_PATH / file_name
-    try:
-        await bot.call_api("upload_group_file", group_id=group_id, file=str(file_path), name=file_name)
-        '''
-        /upload_group_file
-        {
-        "group_id": 0,
-        "file": "string",
-        "name": "string",
-        "folder": "/"
-        }
-        '''
-    finally:
-        if delete_after_upload:
-            file_path.unlink(missing_ok=True)
+    await bot.upload_group_file(group_id=group_id, raw=file, file_name=file_name)
 
 
 def verify_signature(payload, signature, secret) -> bool:

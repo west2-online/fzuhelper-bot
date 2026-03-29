@@ -7,10 +7,10 @@ from .config import Config
 config = get_plugin_config(Config)
 
 
-async def post_feishu_offline_notice(qq: int, msg: str, reason: str) -> None:
+async def post_feishu_offline_notice(qq: int, reason: str) -> None:
     async with aiohttp.ClientSession() as session:
         payload = {
-            "msg": msg,
+            "msg": "下线通知",
             "reason": reason,
             "qq": qq
         }

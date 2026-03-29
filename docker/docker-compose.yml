@@ -1,6 +1,9 @@
 services:
   nonebot:
     image: ghcr.io/west2-online/fzuhelper-bot:edge
+    # build:
+    #  context: .
+    #  dockerfile: docker/Dockerfile
     container_name: fzuhelper-bot
     volumes:
       - ./data:/app/data
@@ -8,22 +11,19 @@ services:
       - "8080:8080"
     env_file:
       - .env
-    environment:
-      ENVIRONMENT: prod
-      HOST: 0.0.0.0
-      PORT: 8080
     restart: unless-stopped
     networks:
       - bot-network
 
-  lagrange-onebot:
-    image: ghcr.io/lagrangedev/lagrange.onebot:edge
-    container_name: lagrange-onebot
+  lagrange:
+    image: ghcr.io/lagrangedev/lagrange.milky:main
+    container_name: lagrange
+    cap_add:
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+    user: root
     volumes:
-      - ./data:/app/data
-    environment:
-      - UID=${UID:-1000}
-      - GID=${GID:-1000}
+      - ./data:/root
     restart: unless-stopped
     tty: true
     stdin_open: true

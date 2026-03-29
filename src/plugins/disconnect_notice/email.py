@@ -22,10 +22,6 @@ HTML_TEMPLATE = """
                     <td style="padding: 10px 0; font-weight: bold;">{qq}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 10px 0; color: #888; width: 100px;">消息</td>
-                    <td style="padding: 10px 0; font-weight: bold;">{msg}</td>
-                </tr>
-                <tr>
                     <td style="padding: 10px 0; color: #888;">原因</td>
                     <td style="padding: 10px 0; color: #cf1322;">{reason}</td>
                 </tr>
@@ -37,13 +33,13 @@ HTML_TEMPLATE = """
 """
 
 
-async def post_email_offline_notice(qq: int, msg: str, reason: str) -> None:
+async def post_email_offline_notice(qq: int, reason: str) -> None:
     if (not config.smtp_server or config.smtp_port == 0 or not config.smtp_username or not config.smtp_password or
             not config.email_to or not config.email_from):
         nonebot.logger.info("SMTP配置不完整，跳过邮件上报掉线!")
         return
 
-    content = HTML_TEMPLATE.format(qq=qq, msg=msg, reason=reason)
+    content = HTML_TEMPLATE.format(qq=qq, reason=reason)
 
     message = EmailMessage()
     message["From"] = config.email_from

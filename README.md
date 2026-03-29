@@ -1,8 +1,11 @@
 # fzuhelper-bot
+
 ![img](https://github.com/user-attachments/assets/6f58cb88-9594-48d1-80a1-b6789c07074d)
+
 ## 功能
 
 * 推送福uu内测版更新日志
+* AI生成更新日志
 * 上传福uu测试版apk
 * BOT掉线通知
 
@@ -32,29 +35,50 @@ cp .env.example .env
 
 ```ini
 #NoneBot驱动 (无需改动)
-DRIVER=~fastapi 
+DRIVER = ~fastapi+~httpx+~websockets
+HOST = 0.0.0.0
+PORT = 8080
+MILKY_CLIENTS = '
+[
+  {
+    "host": "lagrange",
+    "port": "3000",
+    "access_token": "最好配一个密钥，虽然在内部，但是配一个总是好的",
+    "secure": false
+  }
+]
+'
+API_TIMEOUT = 120.0
 #Webhook的密钥
-WEBHOOK_SECRET=SECRET
+WEBHOOK_SECRET = SECRET
 #测试群号
-TEST_GROUP_ID=785037622
+TEST_GROUP_ID = 785037622
 #APP仓库的全名
-APP_REPO=ACaiCat/WebHookTest
+APP_REPO = ACaiCat/WebHookTest
 #离线飞书通知的Webhook地址
-OFFLINE_NOTICE_WEBHOOK=https://www.feishu.cn/...
+OFFLINE_NOTICE_WEBHOOK = https://www.feishu.cn/...
 #离线邮件通知配置
-SMTP_SERVER=smtp.qq.com
-SMTP_PORT=465
-SMTP_USERNAME=your_bot_email@qq.com
-SMTP_PASSWORD=your_generated_auth_code
-EMAIL_FROM=your_bot_email@qq.com
-EMAIL_TO=your_admin_email@gmail.com
+SMTP_SERVER = smtp.qq.com
+SMTP_PORT = 465
+SMTP_USERNAME = your_bot_email@qq.com
+SMTP_PASSWORD = your_generated_auth_code
+EMAIL_FROM = your_bot_email@qq.com
+EMAIL_TO = your_admin_email@gmail.com
 #AI配置 (生成CHANGELOG)
-AI_API_KEY=your_ai_api_key
-AI_API_URL=https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
-AI_MODEL=qwen-max-latest
+AI_API_KEY = your_ai_api_key
+AI_API_URL = https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+AI_MODEL = qwen-max-latest
 ```
 
-### 3. 配置 Docker Compose
+### 3. 配置Lagrange
+
+```shell
+mkdir data
+cp lagrange_config.example.jsonc data/lagrange_config.jsonc
+code lagrange_config.jsonc # 编辑lagrange_config.jsonc，配置密钥
+```
+
+### 4. 配置 Docker Compose
 
 复制 docker-compose 模板并重命名：
 
@@ -71,29 +95,29 @@ services:
       - "8080:8080"
 ```
 
-### 4. 使用 Docker Compose 部署
+### 5. 使用Docker Compose部署
 
 ```bash
 docker compose up -d
 ```
 
-### 5. 登录 QQ 机器人
+### 6. 登录 QQ 机器人
 
-查看Lagrange.OneBot日志并扫描二维码登录：
+查看Lagrange日志并扫描二维码登录：
 
 ```bash
-docker logs -f lagrange-onebot
+docker logs -f lagrange
 ```
 
 > [!NOTE]
 > 如果控制台中的二维码无法扫描，可以打开 `data/qr-0.png` 文件扫描图片中的二维码。
 
-### 6. 测试BOT
+### 7. 测试BOT
 
 在群中发送`/bot-ping` (首先得拉BOT进群)  
 如果BOT正常就会响应`pong`
 
-### 7. 添加Webhook
+### 8. 添加Webhook
 
 1. 在`仓库-Settings-Webhooks`选择`Add webhook`新建一个Webhook
 2. 配置Webhook
@@ -105,18 +129,18 @@ docker logs -f lagrange-onebot
           勾选`Releases`
         - `Send me everything.`
 
-> [!IMPORTANT]   
-> Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
+   > [!IMPORTANT]   
+   > Bot的GitHub Webhook并不支持https交付。如果需要使用https交付，请配置Nginx等反代
 
 3. 测试Webhook
    点开新建Webhook的Recent Deliveries可以看到最近的交付，如果ping事件正确响应，则Webhook配置正确
 
 ## BOT掉线重连
 
-先重启`lagrange-onebot`容器
+先重启`lagrange`容器
 
 ```bash
-docker restart lagrange-onebot
+docker restart lagrange
 ```
 
 然后再重新扫码登录
@@ -128,13 +152,13 @@ docker restart lagrange-onebot
 > 如果重启容器后不显示二维码，可以尝试删除`data/keystore.json`和`data/device.json`再重启容器
 > ```
 > rm data/keystore.json data/device.json
-> docker restart lagrange-onebot
+> docker restart lagrange
 > ```
 
 ## 登录失败
 
-1. 在自己电脑下载[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core/releases/tag/nightly)
-2. 运行Lagrange.OneBot，并且按下任意键进入登录
+1. 在自己电脑下载[Lagrange](https://github.com/LagrangeDev/LagrangeV2)
+2. 运行Lagrange，并且按下任意键进入登录
 3. 登录
 4. 把生成的`device.json`和`keystore.json`上传到`data`文件夹中
-5. 使用`docker restart lagrange-onebot`重启容器即可完成登录
+5. 使用`docker restart lagrange`重启容器即可完成登录

@@ -1,7 +1,7 @@
 import aiohttp
 
 from nonebot import on_command, get_plugin_config
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.milky.event import GroupMessageEvent
 from .changelog import process_changelog
 from .config import Config
 from .github_proxy import GitHubProxy
@@ -37,8 +37,8 @@ async def _(event: GroupMessageEvent):
     download_url: str = apk_asset.browser_download_url
     file_name: str = apk_asset.name.replace(".apk", ".Apk")
 
-    await GitHubProxy.download_file(download_url, file_name, True)
-    await upload_group_file(event.group_id, file_name)
+    file = await GitHubProxy.download_file(download_url, True)
+    await upload_group_file(event.data.group.group_id, file_name, file)
 
 
 changelog_test = on_command("bot-changelog", force_whitespace=True, block=True)
@@ -59,7 +59,7 @@ async def _(event: GroupMessageEvent):
     message = (f"『{release.name}更新日志』\n" +
                git_log)
 
-    await send_group_message(event.group_id, message)
+    await send_group_message(event.data.group.group_id, message)
     await changelog_test.finish()
 
 

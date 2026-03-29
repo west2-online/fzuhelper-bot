@@ -78,8 +78,8 @@ async def _(request: Request):
 
                     for attempt in range(max_retries):
                         try:
-                            await GitHubProxy.download_file(apk_asset.browser_download_url, apk_name, True)
-                            await upload_group_file(config.test_group_id, apk_name)
+                            file = await GitHubProxy.download_file(apk_asset.browser_download_url, True)
+                            await upload_group_file(config.test_group_id, apk_name, file)
 
                             nonebot.logger.success(f"APK上传成功！(第{attempt + 1}次尝试)")
                             break
