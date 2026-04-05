@@ -20,5 +20,5 @@ class Release(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     published_at: Optional[datetime] = None
-    body: Optional[str]
+    body: str
     assets: List[Asset]

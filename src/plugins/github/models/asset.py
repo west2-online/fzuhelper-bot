@@ -15,4 +15,4 @@ class Asset(BaseModel):
     download_count: Optional[int] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
-    browser_download_url: Optional[str] = None
+    browser_download_url: str
