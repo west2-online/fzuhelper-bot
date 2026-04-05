@@ -6,6 +6,7 @@ import nonebot
 from fastapi import Request, HTTPException, FastAPI
 from nonebot import get_plugin_config
 from starlette import status
+from cachetools import TTLCache
 
 from .changelog import process_changelog
 from .config import Config
@@ -15,6 +16,8 @@ from .utils import verify_signature, send_group_message, upload_group_file
 
 app: FastAPI = nonebot.get_app()
 config = get_plugin_config(Config)
+
+processed_releases = TTLCache(maxsize=100, ttl=60 * 60 * 12)
 
 
 @app.post("/github/webhook")
@@ -36,7 +39,7 @@ async def _(request: Request):
 
     payload = json.loads(body.decode('utf-8'))
     repo = Repository.model_validate(payload['repository'])
-    processed_releases = set()
+
     match event_type:
         case "release":
             action = payload["action"]
@@ -46,7 +49,7 @@ async def _(request: Request):
             if release_key in processed_releases:
                 nonebot.logger.info(f"忽略重复的release事件: {release_key}")
                 return {"message": "duplicate ignored"}
-            processed_releases.add(release_key)
+            processed_releases[release_key] = True
 
             nonebot.logger.info(f"收到release事件({action}): {release.model_dump_json()}")
             if (repo.full_name == config.app_repo and
