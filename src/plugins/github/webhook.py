@@ -69,18 +69,18 @@ async def _(request: Request):
 
                     await asyncio.sleep(retry_delay)
 
-                    api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
-                            resp.raise_for_status()
-                            apiPayload = await resp.json()
-
-                    apiRelease = Release.model_validate(apiPayload)
-                    apk_asset = apiRelease.assets[0]
-                    apk_name = apk_asset.name.replace(".apk", ".Apk")
-
                     for attempt in range(max_retries):
                         try:
+                            api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
+                            async with aiohttp.ClientSession() as session:
+                                async with session.get(api_url,
+                                                       headers={"Accept": "application/vnd.github+json"}) as resp:
+                                    resp.raise_for_status()
+                                    apiPayload = await resp.json()
+
+                            apiRelease = Release.model_validate(apiPayload)
+                            apk_asset = apiRelease.assets[0]
+                            apk_name = apk_asset.name.replace(".apk", ".Apk")
                             file = await GitHubProxy.download_file(apk_asset.browser_download_url, True)
                             await upload_group_file(config.test_group_id, apk_name, file)
 
