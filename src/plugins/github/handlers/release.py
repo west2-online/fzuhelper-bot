@@ -12,7 +12,6 @@ from ..github_proxy import GitHubProxy
 from ..utils import upload_group_file, send_group_message
 
 config = get_plugin_config(Config)
-processed_releases = TTLCache(maxsize=100, ttl=60 * 60 * 12)
 
 
 async def try_upload_apk():
@@ -47,6 +46,9 @@ async def try_upload_apk():
                 await asyncio.sleep(retry_delay)
             else:
                 nonebot.logger.warning(f"经过{max_retries}次尝试后仍然失败，放弃上传")
+
+
+processed_releases: TTLCache[str, bool] = TTLCache(maxsize=100, ttl=60 * 60 * 12)
 
 
 async def handle_release(payload: dict):
