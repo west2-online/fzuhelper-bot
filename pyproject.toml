@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10, <4.0"
 dependencies = [
     "aiohttp>=3.14.0",
-    "aiosmtplib>=5.1.0",
+    "aiosmtplib>=5.1.1",
     "cachetools>=7.0.5",
     "nb-cli>=1.7.2",
     "nonebot-adapter-milky>=1.1.0",
