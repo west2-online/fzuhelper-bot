@@ -7,10 +7,13 @@ requires-python = ">=3.10, <4.0"
 dependencies = [
     "aiohttp>=3.14.0",
     "aiosmtplib>=5.1.0",
+    "applaud>=0.9.4",
     "cachetools>=7.0.5",
+    "cryptography>=50.0.0",
     "nb-cli>=1.7.2",
     "nonebot-adapter-milky>=1.1.0",
     "nonebot2[fastapi,httpx]>=2.4.4",
+    "pyjwt>=2.13.0",
 ]
 
 [tool.nonebot]

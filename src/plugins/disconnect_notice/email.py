@@ -34,8 +34,14 @@ HTML_TEMPLATE = """
 
 
 async def post_email_offline_notice(qq: int, reason: str) -> None:
-    if (not config.smtp_server or config.smtp_port == 0 or not config.smtp_username or not config.smtp_password or
-            not config.email_to or not config.email_from):
+    if (
+        not config.smtp_server
+        or config.smtp_port == 0
+        or not config.smtp_username
+        or not config.smtp_password
+        or not config.email_to
+        or not config.email_from
+    ):
         nonebot.logger.info("SMTP配置不完整，跳过邮件上报掉线!")
         return
 
@@ -49,9 +55,9 @@ async def post_email_offline_notice(qq: int, reason: str) -> None:
 
     try:
         async with aiosmtplib.SMTP(
-                hostname=config.smtp_server,
-                port=config.smtp_port,
-                use_tls=config.smtp_port == 465,
+            hostname=config.smtp_server,
+            port=config.smtp_port,
+            use_tls=config.smtp_port == 465,
         ) as smtp:
             await smtp.login(config.smtp_username, config.smtp_password)
             await smtp.send_message(message)

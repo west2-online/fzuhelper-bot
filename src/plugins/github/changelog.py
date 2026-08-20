@@ -8,15 +8,11 @@ config = get_plugin_config(Config)
 
 
 def format_git_log(release_body: str) -> str:
-    git_log = "\n".join(
-        release_body
-        .strip()
-        .splitlines()
-        [:-1]).strip()
+    git_log = "\n".join(release_body.strip().splitlines()[:-1]).strip()
 
-    commits = [commit.strip() for commit in git_log.split('\n\n') if commit.strip()]
+    commits = [commit.strip() for commit in git_log.split("\n\n") if commit.strip()]
 
-    return '\n\n'.join(commits)
+    return "\n\n".join(commits)
 
 
 CHANGELOG_PROMPT = """
@@ -86,22 +82,28 @@ async def call_model_process_changelog(prompt):
         "model": config.ai_model,
         "messages": [
             {"role": "system", "content": CHANGELOG_PROMPT},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": prompt},
         ],
         "temperature": 0,
     }
 
     try:
-        nonebot.logger.debug(f"AI请求参数: model={config.ai_model}, url={config.ai_api_url}")
+        nonebot.logger.debug(
+            f"AI请求参数: model={config.ai_model}, url={config.ai_api_url}"
+        )
         async with httpx.AsyncClient() as client:
-            response = await client.post(config.ai_api_url, headers=headers, json=data, timeout=60.0)
+            response = await client.post(
+                config.ai_api_url, headers=headers, json=data, timeout=60.0
+            )
             response.raise_for_status()
 
             result = response.json()
-            content: str = result['choices'][0]['message']['content']
+            content: str = result["choices"][0]["message"]["content"]
             return content.strip()
     except httpx.HTTPStatusError as e:
-        nonebot.logger.error(f"AI请求HTTP错误: {e.status_code}, {e.response.text[:300]}")
+        nonebot.logger.error(
+            f"AI请求HTTP错误: {e.status_code}, {e.response.text[:300]}"
+        )
         raise
     except Exception as e:
         nonebot.logger.error(f"AI请求异常: {type(e).__name__}: {str(e)}")
@@ -116,9 +118,11 @@ async def process_changelog(changelog: str) -> str:
     has_model = bool(config.ai_model)
     has_key = bool(config.ai_api_key)
     nonebot.logger.info(f"AI配置检查: url={has_url}, model={has_model}, key={has_key}")
-    
+
     if not config.ai_api_url or not config.ai_model or not config.ai_api_key:
-        nonebot.logger.warning(f"AI模型配置不完整，跳过AI处理更新日志! (url={has_url}, model={has_model}, key={has_key})")
+        nonebot.logger.warning(
+            f"AI模型配置不完整，跳过AI处理更新日志! (url={has_url}, model={has_model}, key={has_key})"
+        )
         return formated_changelog
 
     nonebot.logger.info("开始调用AI模型处理更新日志...")
@@ -127,5 +131,7 @@ async def process_changelog(changelog: str) -> str:
         nonebot.logger.success("AI处理成功")
         return result
     except Exception as e:
-        nonebot.logger.error(f"调用AI模型处理更新日志失败，退回原始更新日志: {type(e).__name__}: {str(e)}")
+        nonebot.logger.error(
+            f"调用AI模型处理更新日志失败，退回原始更新日志: {type(e).__name__}: {str(e)}"
+        )
         return formated_changelog

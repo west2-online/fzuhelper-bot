@@ -5,11 +5,7 @@ import nonebot.log
 XGET_BASE = "https://xget.xi-xu.me/gh/"
 GITHUB_URL_RE = re.compile(r"https://github\.com/(.+)")
 
-PROXYS = [
-    "https://ghproxy.net/",
-    "https://gh.llkk.cc/",
-    "https://gh-proxy.com/"
-]
+PROXYS = ["https://ghproxy.net/", "https://gh.llkk.cc/", "https://gh-proxy.com/"]
 
 
 def _build_xget_url(github_url: str) -> str | None:
@@ -41,7 +37,9 @@ class GitHubProxy:
                 return await cls._do_download(proxy_url)
             except Exception as e:
                 print(f"通过代理 {PROXYS[cls.current_proxy_index]} 下载失败: {str(e)}")
-                cls.current_proxy_index = (cls.current_proxy_index + 1) % len(PROXYS)  # 环形队列
+                cls.current_proxy_index = (cls.current_proxy_index + 1) % len(
+                    PROXYS
+                )  # 环形队列
                 tried += 1
         raise Exception("所有代理下载失败")
 

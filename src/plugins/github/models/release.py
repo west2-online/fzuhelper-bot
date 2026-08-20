@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, HttpUrl
 
@@ -8,6 +7,7 @@ from .asset import Asset
 
 class Release(BaseModel):
     """GitHub release model"""
+
     id: int
     url: HttpUrl
     assets_url: HttpUrl
@@ -17,8 +17,8 @@ class Release(BaseModel):
     name: str
     draft: bool
     prerelease: bool
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    published_at: Optional[datetime] = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    published_at: datetime | None = None
     body: str
-    assets: List[Asset]
+    assets: list[Asset]

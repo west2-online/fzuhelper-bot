@@ -5,11 +5,11 @@ import nonebot
 from cachetools import TTLCache
 from nonebot import get_plugin_config
 
-from ..models import Release, Repository
 from ..changelog import process_changelog
 from ..config import Config
 from ..github_proxy import GitHubProxy
-from ..utils import upload_group_file, send_group_message
+from ..models import Release, Repository
+from ..utils import send_group_message, upload_group_file
 
 config = get_plugin_config(Config)
 
@@ -22,12 +22,17 @@ async def try_upload_apk():
 
     for attempt in range(max_retries):
         try:
-            api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
-            async with aiohttp.ClientSession() as session:
-                async with session.get(api_url,
-                                       headers={"Accept": "application/vnd.github+json"}) as resp:
-                    resp.raise_for_status()
-                    apiPayload = await resp.json()
+            api_url = (
+                f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
+            )
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
+                    api_url, headers={"Accept": "application/vnd.github+json"}
+                ) as resp,
+            ):
+                resp.raise_for_status()
+                apiPayload = await resp.json()
 
             apiRelease = Release.model_validate(apiPayload)
             apk_asset = apiRelease.assets[0]
@@ -53,8 +58,8 @@ processed_releases: TTLCache[str, bool] = TTLCache(maxsize=100, ttl=60 * 60 * 12
 
 async def handle_release(payload: dict):
     action = payload["action"]
-    repo = Repository.model_validate(payload['repository'])
-    release = Release.model_validate(payload['release'])
+    repo = Repository.model_validate(payload["repository"])
+    release = Release.model_validate(payload["release"])
 
     release_key = f"{release.id}_{action}"
     if release_key in processed_releases:
@@ -63,13 +68,14 @@ async def handle_release(payload: dict):
     processed_releases[release_key] = True
 
     nonebot.logger.info(f"收到release事件({action}): {release.model_dump_json()}")
-    if (repo.full_name == config.app_repo and
-            action == "published" and
-            release.tag_name == "alpha"):
+    if (
+        repo.full_name == config.app_repo
+        and action == "published"
+        and release.tag_name == "alpha"
+    ):
         git_log = await process_changelog(release.body)
 
-        message = (f"『{release.name}更新日志』\n" +
-                   git_log)
+        message = f"『{release.name}更新日志』\n" + git_log
 
         asyncio.create_task(send_group_message(config.test_group_id, message))
         asyncio.create_task(try_upload_apk())

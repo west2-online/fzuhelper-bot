@@ -15,9 +15,9 @@ config = get_plugin_config(Config)
 
 @ping.handle()
 async def _():
-    await ping.finish("pong\n"
-                      f"app_repo: {config.app_repo}\n"
-                      f"test_group_id: {config.test_group_id}")
+    await ping.finish(
+        f"pong\napp_repo: {config.app_repo}\ntest_group_id: {config.test_group_id}"
+    )
 
 
 download_test = on_command("bot-download", force_whitespace=True, block=True)
@@ -27,7 +27,9 @@ download_test = on_command("bot-download", force_whitespace=True, block=True)
 async def _(event: GroupMessageEvent):
     api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
     async with aiohttp.ClientSession() as session:
-        async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
+        async with session.get(
+            api_url, headers={"Accept": "application/vnd.github+json"}
+        ) as resp:
             resp.raise_for_status()
             payload = await resp.json()
 
@@ -48,7 +50,9 @@ changelog_test = on_command("bot-changelog", force_whitespace=True, block=True)
 async def _(event: GroupMessageEvent):
     api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
     async with aiohttp.ClientSession() as session:
-        async with session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp:
+        async with session.get(
+            api_url, headers={"Accept": "application/vnd.github+json"}
+        ) as resp:
             resp.raise_for_status()
             payload = await resp.json()
 
@@ -56,11 +60,7 @@ async def _(event: GroupMessageEvent):
 
     git_log = await process_changelog(release.body)
 
-    message = (f"『{release.name}更新日志』\n" +
-               git_log)
+    message = f"『{release.name}更新日志』\n" + git_log
 
     await send_group_message(event.data.group.group_id, message)
     await changelog_test.finish()
-
-
-

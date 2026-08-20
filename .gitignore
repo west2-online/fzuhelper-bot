@@ -142,3 +142,4 @@ dmypy.json
 .idea
 data/
 docker-compose.yml
+temp.py

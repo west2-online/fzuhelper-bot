@@ -17,5 +17,5 @@ async def upload_group_file(group_id: int, file_name: str, file: bytes) -> None:
 
 def verify_signature(payload, signature, secret) -> bool:
     mac = hmac.new(secret.encode(), msg=payload, digestmod=hashlib.sha256)
-    expected_signature = 'sha256=' + mac.hexdigest()
+    expected_signature = "sha256=" + mac.hexdigest()
     return hmac.compare_digest(expected_signature, signature)
