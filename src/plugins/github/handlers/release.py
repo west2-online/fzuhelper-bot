@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 import aiohttp
 import nonebot
@@ -9,12 +10,13 @@ from ..changelog import process_changelog
 from ..config import Config
 from ..github_proxy import GitHubProxy
 from ..models import Release, Repository
+from ..review_react import add_pending
 from ..utils import send_group_message, upload_group_file
 
 config = get_plugin_config(Config)
 
 
-async def try_upload_apk():
+async def try_upload_apk() -> str | None:
     max_retries = 3
     retry_delay = 5
 
@@ -41,10 +43,12 @@ async def try_upload_apk():
             await upload_group_file(config.test_group_id, apk_name, file)
 
             nonebot.logger.success(f"APK上传成功！(第{attempt + 1}次尝试)")
-            break
 
-        except Exception as e:
-            nonebot.logger.error(f"第{attempt + 1}次尝试失败: {str(e)}")
+            version = re.search(r"\.(\d+)\.apk", apk_asset.name).group(1)  # type: ignore
+            return version
+
+        except Exception as e:  # noqa: BLE001
+            nonebot.logger.error(f"第{attempt + 1}次尝试失败: {e!s}")
 
             if attempt < max_retries - 1:
                 nonebot.logger.info(f"{retry_delay}秒后重试...")
@@ -53,7 +57,7 @@ async def try_upload_apk():
                 nonebot.logger.warning(f"经过{max_retries}次尝试后仍然失败，放弃上传")
 
 
-processed_releases: TTLCache[str, bool] = TTLCache(maxsize=100, ttl=60 * 60 * 12)
+processed_releases: TTLCache[str, bool] = TTLCache(maxsize=100, ttl=60 * 60 * 12) # type: ignore
 
 
 async def handle_release(payload: dict):
@@ -77,8 +81,15 @@ async def handle_release(payload: dict):
 
         message = f"『{release.name}更新日志』\n" + git_log
 
-        asyncio.create_task(send_group_message(config.test_group_id, message))
-        asyncio.create_task(try_upload_apk())
+        async def publish():
+            msg_id = await send_group_message(config.test_group_id, message)
+            version = await try_upload_apk()
+
+            if version is not None:
+                add_pending(config.test_group_id, msg_id, version)
+
+        asyncio.create_task(publish())
+
         return {"message": "ok"}
 
     return {"message": "Not processed"}

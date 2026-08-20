@@ -5,9 +5,10 @@ import nonebot
 from nonebot.adapters.milky import Bot, Message
 
 
-async def send_group_message(group_id: int, message: str | Message) -> None:
+async def send_group_message(group_id: int, message: str | Message) -> int:
     bot: Bot = nonebot.get_bot()
-    await bot.send_group_message(group_id=group_id, message=message)
+    response =await bot.send_group_message(group_id=group_id, message=message)
+    return response.message_seq
 
 
 async def upload_group_file(group_id: int, file_name: str, file: bytes) -> None:

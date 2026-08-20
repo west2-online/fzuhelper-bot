@@ -1,12 +1,13 @@
 import aiohttp
-
-from nonebot import on_command, get_plugin_config
+from nonebot import get_plugin_config, on_command
 from nonebot.adapters.milky.event import GroupMessageEvent
+
 from .changelog import process_changelog
 from .config import Config
 from .github_proxy import GitHubProxy
 from .models import Release
-from .utils import upload_group_file, send_group_message
+from .utils import send_group_message, upload_group_file
+from .review_react import add_pending
 
 ping = on_command("bot-ping", force_whitespace=True, block=True)
 
@@ -26,12 +27,12 @@ download_test = on_command("bot-download", force_whitespace=True, block=True)
 @download_test.handle()
 async def _(event: GroupMessageEvent):
     api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            api_url, headers={"Accept": "application/vnd.github+json"}
-        ) as resp:
-            resp.raise_for_status()
-            payload = await resp.json()
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(api_url, headers={"Accept": "application/vnd.github+json"}) as resp,
+    ):
+        resp.raise_for_status()
+        payload = await resp.json()
 
     release = Release.model_validate(payload)
 
@@ -49,18 +50,17 @@ changelog_test = on_command("bot-changelog", force_whitespace=True, block=True)
 @changelog_test.handle()
 async def _(event: GroupMessageEvent):
     api_url = f"https://api.github.com/repos/{config.app_repo}/releases/tags/alpha"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            api_url, headers={"Accept": "application/vnd.github+json"}
-        ) as resp:
-            resp.raise_for_status()
-            payload = await resp.json()
+    async with aiohttp.ClientSession() as session, session.get(
+        api_url, headers={"Accept": "application/vnd.github+json"}
+    ) as resp:
+        resp.raise_for_status()
+        payload = await resp.json()
 
     release = Release.model_validate(payload)
 
     git_log = await process_changelog(release.body)
 
     message = f"『{release.name}更新日志』\n" + git_log
-
-    await send_group_message(event.data.group.group_id, message)
+    msg_id = await send_group_message(event.data.group.group_id, message)
+    add_pending(event.data.group.group_id, msg_id, "726723")
     await changelog_test.finish()

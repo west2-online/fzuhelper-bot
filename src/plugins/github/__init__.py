@@ -13,5 +13,8 @@ __plugin_meta__ = PluginMetadata(
     },
 )
 
-from . import webhook
-from . import commands
+from . import (
+    commands,  # noqa: F401
+    review_react,  # noqa: F401
+    webhook,  # noqa: F401
+)
