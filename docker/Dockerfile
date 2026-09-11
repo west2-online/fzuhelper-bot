@@ -13,7 +13,7 @@ ENV MAX_WORKERS=1
 COPY .. /app/
 
 RUN pip install uv
-RUN uv sync --frozen
-
+# RUN uv sync --frozen
+RUN uv sync
 
 CMD ["uv", "run", "nb", "run"]
