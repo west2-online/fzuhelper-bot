@@ -1,8 +1,7 @@
 FROM python:3.13-slim
 
 RUN apt-get update
-RUN apt-get install curl -y
-
+RUN apt-get install git curl -y
 WORKDIR /app
 
 ENV TZ=Asia/Shanghai
@@ -13,7 +12,7 @@ ENV MAX_WORKERS=1
 COPY .. /app/
 
 RUN pip install uv
-# RUN uv sync --frozen
-RUN uv sync
+RUN uv sync --frozen
+
 
 CMD ["uv", "run", "nb", "run"]
