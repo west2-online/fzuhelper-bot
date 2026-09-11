@@ -3,23 +3,23 @@ name = "fzuhelper-bot"
 version = "0.1.1"
 description = "fzuhelper-bot"
 readme = "README.md"
-requires-python = ">=3.10, <4.0"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "aiohttp>=3.14.0",
     "aiosmtplib>=5.1.0",
-    "asconnect>=3.0.6",
+    "asconnect>=6.0.0",
     "cachetools>=7.0.5",
-    "cryptography>=40,<47",
+    "cryptography>=43.0.3,<47",
     "nb-cli>=1.7.2",
-    "nonebot-adapter-milky>=1.2.0",
+    "nonebot-adapter-qq @ git+https://github.com/nonebot/adapter-qq.git@master",
     "nonebot-plugin-apscheduler>=0.5.0",
-    "nonebot2[fastapi,httpx]>=2.4.4",
+    "nonebot2[fastapi,httpx,websockets]>=2.4.4",
     "pydantic>=2.0",
     "pyjwt>=2.0.0,<3.0.0",
 ]
 
 [tool.nonebot]
-plugin_dirs = ["src/plugins"]
+plugin_dirs = ["fzuhelper-bot"]
 builtin_plugins = []
 [tool.nonebot.plugins]
 "@local" = []
@@ -27,4 +27,4 @@ builtin_plugins = []
 
 [tool.nonebot.adapters]
 "@local" = []
-nonebot-adapter-milky = [{ name = "nonebot-adapter-milky", module_name = "nonebot.adapters.milky" }]
+nonebot-adapter-qq = [{ name = "nonebot-adapter-qq", module_name = "nonebot.adapters.qq" }]

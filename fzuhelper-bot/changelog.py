@@ -1,3 +1,5 @@
+import re
+
 import httpx
 import nonebot
 from nonebot import get_plugin_config
@@ -16,27 +18,25 @@ def format_git_log(release_body: str) -> str:
 
 
 CHANGELOG_PROMPT = """
-你是一个专业的版本发布日志（Changelog）生成助手。你的唯一任务是将用户提供的Git提交历史，严格按照下列规则转换为中文更新日志，不得有任何偏差。
+你是一个专业的版本发布日志（Changelog）生成助手。你的唯一任务是将用户提供的 Git 提交历史，严格按照下列规则转换为中文更新日志，不得有任何偏差。
 
 【第一步：信息过滤（处理前必须执行）】
 
 在转换前，先从原始提交信息中删除以下所有内容：
-- PR编号（如 #382）、提交哈希
-- 合并提交记录（如 Merge pull request...）
 - CI/CD标记（如 [skip ci]、[build]、[no ci] 等）
 - 所有URL链接及其附带文字，整段删除
-- Git尾注（Co-authored-by / Closes / Fixes / Signed-off-by 等），整行删除
-- Conventional Commits前缀（如 feat:、fix:、build(deps): 等），直接去掉
+- Conventional Commits前缀（如 feat:、fix:、build(deps): 等）
 
 【第二步：翻译与润色】
 
 - 将剩余英文内容准确翻译为简练中文
 - 严格保持原意，绝不添加、推断或捏造原文未提及的信息
 - 若原文已是清晰中文，保持不变，仅做必要润色
+- 如果是平台专属更改，前面应该加上 对应平台： 前缀，其他情况不加前缀
+- 注意要保留PR编号（如 #382）
 
 【输出格式（不可更改）】
 
-- 纯文本输出，绝对禁止使用任何Markdown语法（无#标题、无**加粗**、无代码块、无列表符号-或*）
 - 条目数量必须与输入完全一致，不得增加或删减
 - 按原始顺序输出
 - 编号格式为"数字. "（数字后跟英文句点和一个空格）
@@ -50,13 +50,28 @@ CHANGELOG_PROMPT = """
 
 3. 条目三
 
-【自检要求】
+【示例】
 
-输出前，请默默完成以下检查，不要将检查过程输出给用户：
-1. 条目数量是否与输入一致？
-2. 是否混入了任何Markdown符号？
+输入：
+1. add dark mode support (#382)
+2. fix(android): resolve crash on startup https://github.com/xxx/xxx/issues/123
+3. build(deps): bump lodash from 4.17.20 to 4.17.21 [skip ci]
+4. chore: 优化构建速度
+5. feat(ios): support live activities
+6. feat(harmony): 支持锁屏小组件
 
-确认无误后，仅输出最终日志，不输出任何解释、前言或结语。
+输出：
+1. 添加深色模式支持
+
+2. Android：修复启动时崩溃的问题
+
+3. 升级 lodash 依赖版本
+
+4. 优化构建速度
+
+5. iOS：支持实时活动
+
+6. Harmony：支持锁屏小组件
 """
 
 
@@ -77,7 +92,7 @@ async def call_model_process_changelog(prompt):
 
     try:
         nonebot.logger.debug(
-            f"AI请求参数: model={config.ai_model}, url={config.ai_api_url}"
+            f"AI 请求参数: model={config.ai_model}, url={config.ai_api_url}"
         )
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -90,36 +105,32 @@ async def call_model_process_changelog(prompt):
             return content.strip()
     except httpx.HTTPStatusError as e:
         nonebot.logger.error(
-            f"AI请求HTTP错误: {e.status_code}, {e.response.text[:300]}"
+            f"AI 请求HTTP错误: {e.response.status_code}, {e.response.text[:300]}"
         )
         raise
     except Exception as e:
-        nonebot.logger.error(f"AI请求异常: {type(e).__name__}: {str(e)}")
+        nonebot.logger.error(f"AI 请求异常: {type(e).__name__}: {e!s}")
         raise
 
 
 async def process_changelog(changelog: str) -> str:
-    formated_changelog = format_git_log(changelog)
+    formatted = format_git_log(changelog)
 
-    # 检查AI配置
-    has_url = bool(config.ai_api_url)
-    has_model = bool(config.ai_model)
-    has_key = bool(config.ai_api_key)
-    nonebot.logger.info(f"AI配置检查: url={has_url}, model={has_model}, key={has_key}")
+    if not all([config.ai_api_url, config.ai_model, config.ai_api_key]):
+        nonebot.logger.warning("AI 模型配置不完整，跳过AI处理更新日志!")
+        return formatted
 
-    if not config.ai_api_url or not config.ai_model or not config.ai_api_key:
-        nonebot.logger.warning(
-            f"AI模型配置不完整，跳过AI处理更新日志! (url={has_url}, model={has_model}, key={has_key})"
-        )
-        return formated_changelog
-
-    nonebot.logger.info("开始调用AI模型处理更新日志...")
+    nonebot.logger.info("开始调用 AI 模型处理更新日志...")
     try:
-        result = await call_model_process_changelog(formated_changelog)
-        nonebot.logger.success("AI处理成功")
-        return result
-    except Exception as e:
+        formatted = await call_model_process_changelog(formatted)
+        nonebot.logger.success("AI 处理成功")
+    except Exception as e:  # noqa: BLE001
         nonebot.logger.error(
-            f"调用AI模型处理更新日志失败，退回原始更新日志: {type(e).__name__}: {str(e)}"
+            f"调用 AI 模型失败，退回原始更新日志: {type(e).__name__}: {e}"
         )
-        return formated_changelog
+
+    return re.sub(
+        r"\(#(\d+)\)",
+        f"([#\\1](https://github.com/{config.app_repo}/pull/\\1))",
+        formatted,
+    )
