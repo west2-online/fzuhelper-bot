@@ -42,7 +42,7 @@ async def react_msg(
 
     if react_type == "huawei":
         message = (
-            MessageSegment.markdown(f"⭕ Harmony（{version}）已通过 AppTest 测试审核！")
+            MessageSegment.markdown(f"🌼 Harmony（{version}）已通过 AppTest 测试审核！")
             + app_test_keyboard
         )
     else:
