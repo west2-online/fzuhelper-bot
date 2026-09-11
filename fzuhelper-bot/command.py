@@ -1,5 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters.qq import Bot, GroupMessageCreateEvent, MessageSegment
+from nonebot.permission import SUPERUSER
 
 from . import config
 from .changelog import process_changelog
@@ -22,7 +23,9 @@ async def _(event: GroupMessageCreateEvent):
     )
 
 
-download_test = on_command("bot-download", force_whitespace=True, block=True)
+download_test = on_command(
+    "bot-download", force_whitespace=True, block=True, permission=SUPERUSER
+)
 
 
 @download_test.handle()
@@ -38,7 +41,9 @@ async def _(bot: Bot, event: GroupMessageCreateEvent):
     await upload_group_file(event.group_openid, file_name, file)
 
 
-changelog_test = on_command("bot-changelog", force_whitespace=True, block=True)
+changelog_test = on_command(
+    "bot-changelog", force_whitespace=True, block=True, permission=SUPERUSER
+)
 
 
 @changelog_test.handle()
