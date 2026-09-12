@@ -1,10 +1,11 @@
 # ----- Project -----
 
-# .env.*
+.env.*
 .dockerignore
 docker/Dockerfile
 docker/docker-compose.yml
 README.md
+.env
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,node,visualstudiocode,jetbrains,macos,windows,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,node,visualstudiocode,jetbrains,macos,windows,linux
@@ -231,7 +232,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-# .env
+.env
 .env.test
 .env.production
 
@@ -474,3 +475,4 @@ $RECYCLE.BIN/
 renovate.json
 data
 .idea
+.git

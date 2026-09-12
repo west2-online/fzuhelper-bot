@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 from typing import Literal
 
@@ -58,23 +59,32 @@ async def react_msg(
 async def update():
     global pending_reviews
 
-    if len(pending_reviews) == 0:
+    if not pending_reviews:
         return
 
-    huawei_client = app_gallery.AppGalleryClient(
-        Credentials.model_validate(config.app_gallery_credentials),
-        str(config.app_gallery_app_id),
-    )
-    huawei_versions = await huawei_client.query_ready_test_version()
+    huawei_versions: list[str] = []
+    if any(i.review_type == "huawei" for i in pending_reviews):
+        huawei_client = app_gallery.AppGalleryClient(
+            Credentials.model_validate(config.app_gallery_credentials),
+            str(config.app_gallery_app_id),
+        )
+        huawei_versions = await huawei_client.query_ready_test_version()
 
-    apple_client = app_store.build_client(
-        config.app_store_issuer_id,
-        config.app_store_key_id,
-        config.app_store_key_contents,
-    )
-    apple_versions = app_store.query_ready_test_version(
-        apple_client, str(config.app_store_app_id)
-    )
+    apple_versions: list[str] = []
+    if any(i.review_type == "apple" for i in pending_reviews):
+        apple_client = app_store.build_client(
+            config.app_store_issuer_id,
+            config.app_store_key_id,
+            config.app_store_key_contents,
+        )
+        apple_versions = await asyncio.wait_for(
+            asyncio.to_thread(
+                app_store.query_ready_test_version,
+                apple_client,
+                str(config.app_store_app_id),
+            ),
+            timeout=45,
+        )
 
     for i in pending_reviews:
         if i.review_type == "huawei" and i.version in huawei_versions:
